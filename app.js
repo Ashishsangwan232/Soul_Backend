@@ -26,8 +26,8 @@ app.use(cookieParser());
 
 //middlewares 
 app.use(cors({
+  origin: 'http://localhost:5173', // Your React app's address
   credentials: true,
-  origin: `${API_ORIGIN}`, // Your React app's address
   allowedHeaders: ["Content-Type", "x-access-token", "Authorization"] // Added "Authorization"
 }));
 
