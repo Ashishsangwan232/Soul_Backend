@@ -89,8 +89,8 @@ exports.signin = async (req, res) => {
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: false, // 🔁 Set to true if using HTTPS
-            sameSite: "Lax", // ⬅️ THIS IS NEEDED (or "None" if cross-site with HTTPS)
+            secure: true, // 🔁 Set to true if using HTTPS
+            sameSite: "None", // ⬅️ THIS IS NEEDED (or "None" if cross-site with HTTPS)
             // maxAge: 24 * 60 * 60 * 1000 // 1 day
             maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000  // 7d vs 1d
         });
