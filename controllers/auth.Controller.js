@@ -18,7 +18,7 @@ exports.signup = async (req, res) => {
         if (existingUser) {
             return res.status(400).json({ message: "Failed! email is already in use!" });
         }
-        
+
         if (existingUser && !existingUser.verified) {
             return res.status(400).json({
                 message: "Account already exists but is not verified. Please check your email or request a new link."
@@ -28,7 +28,7 @@ exports.signup = async (req, res) => {
         // Generate email verification token
         const verificationToken = crypto.randomBytes(32).toString("hex");
 
-        
+
         // Create new user
         const user = new User({
             username,
@@ -37,7 +37,7 @@ exports.signup = async (req, res) => {
             verified: false,
             verificationToken
         });
-        
+
         user.verificationToken = verificationToken;
         user.verificationTokenExpires = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
         await user.save();
@@ -111,7 +111,12 @@ exports.signin = async (req, res) => {
 // for logout 
 exports.signout = async (req, res) => {
     try {
-        res.clearCookie("token");
+        res.clearCookie("token", {
+            httpOnly: true,
+            secure: true,         // Must match the original cookie options
+            sameSite: "None"
+            // domain: 'yourdomain.com'  // Optional: If you set domain during login, add here too
+        });
         return res.status(200).json({ message: "You've been signed out" });
     }
     catch (err) {
