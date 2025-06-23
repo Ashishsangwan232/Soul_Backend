@@ -100,7 +100,7 @@ exports.checkResetStatus = async (req, res) => {
 
     const recentlyReset = user.passwordRecentlyReset && 
       user.passwordResetTime && 
-      (Date.now() - user.passwordResetTime.getTime()) < 10 * 60 * 1000; // 10 min
+      (Date.now() - user.passwordResetTime.getTime()) < 5 * 60 * 1000; // 5 min
 
     if (!recentlyReset && user.passwordRecentlyReset) {
       // Auto-clear flag if time expired
