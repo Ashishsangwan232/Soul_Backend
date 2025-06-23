@@ -9,27 +9,21 @@ async function sendPasswordResetEmail(email, token) {
     BREVO_HOST_PORT,
     API_ORIGIN
   } = process.env;
-
-  if (!BREVO_EMAIL_KEY || !BREVO_EMAIL || !BREVO_HOST || !BREVO_HOST_PORT || !API_ORIGIN) {
-    throw new Error("Missing email configuration. Check environment variables.");
-  }
-
-  const resetLink = `${API_ORIGIN}/reset-password/${token}`;
+  const resetLink = `${API_ORIGIN}/reset-password/${token}`; // Frontend page to reset password
 
   const transporter = nodemailer.createTransport({
-    host: BREVO_HOST,
-    port: Number(BREVO_HOST_PORT),
+    host: `${BREVO_HOST}`,
+    port: `${BREVO_HOST_PORT}`,
     auth: {
-      user: BREVO_EMAIL,
-      pass: BREVO_EMAIL_KEY,
+      user: `${BREVO_EMAIL}`,
+      pass: `${BREVO_EMAIL_KEY}`
     },
   });
 
   await transporter.sendMail({
-    from: `SoulReads <${BREVO_EMAIL}>`,
+    from: '"SoulReads" <ashu307081@gmail.com>',
     to: email,
     subject: 'Reset Your Password - SoulReads',
-    text: `A password reset was requested for your account. Use the following link to reset your password: ${resetLink}`,
     html: `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #f9f9f9; padding: 20px; border-radius: 8px; color: #333;">
   <h2 style="color: #E53935;">Reset Your Password</h2>
@@ -55,7 +49,7 @@ async function sendPasswordResetEmail(email, token) {
     &copy; ${new Date().getFullYear()} SoulReads. All rights reserved.
   </p>
 </div>
-    `,
+        `,
   });
 }
 

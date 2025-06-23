@@ -11,26 +11,20 @@ async function sendVerificationEmail(email, token) {
     API_ORIGIN
   } = process.env;
 
-  if (!BREVO_EMAIL_KEY || !BREVO_EMAIL || !BREVO_HOST || !BREVO_HOST_PORT || !API_URL || !API_ORIGIN) {
-    throw new Error("Missing email configuration. Check environment variables.");
-  }
-
   const verifyLink = `${API_URL}/auth/verify-email?token=${token}&redirect=${API_ORIGIN}/verify-success`;
 
-  console.log("Sending verification email to:", email);
-  console.log("Verification link:", verifyLink);
-
   const transporter = nodemailer.createTransport({
-    host: BREVO_HOST,
-    port: Number(BREVO_HOST_PORT),
+    host: `${BREVO_HOST}`,
+    port: `${BREVO_HOST_PORT}`,
     auth: {
-      user: BREVO_EMAIL,
-      pass: BREVO_EMAIL_KEY
-    }
+      user: `${BREVO_EMAIL}`,
+      pass: `${BREVO_EMAIL_KEY}`
+    },
   });
 
+
   await transporter.sendMail({
-    from: `SoulReads <${BREVO_EMAIL}>`,
+    from: '"SoulReads" <ashu307081@gmail.com>',
     to: email,
     subject: 'Verify Your Email - SoulReads',
     text: `Welcome to SoulReads! Please verify your email by clicking this link: ${verifyLink}`,
