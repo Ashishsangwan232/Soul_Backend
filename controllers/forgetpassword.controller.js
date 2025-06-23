@@ -7,11 +7,14 @@ exports.forgotPassword = async (req, res) => {
 
   try {
     const { email } = req.body;
-    console.log("Received forgot-password request for:", email);
+
+    // console.log("Received forgot-password request for:", email);
+   
     let user = await User.findOne({
       email: { $regex: new RegExp(`^${email}$`, 'i') }
     });
-    console.log("User found?", user.email);
+
+    // console.log("User found?", user.email);
     if (!user)
       return res.status(400).json({ message: 'Email not found.' });
 
@@ -50,6 +53,11 @@ exports.resetPassword = async (req, res) => {
   user.password = await bcrypt.hash(password, 10);
   user.resetToken = undefined;
   user.resetTokenExpires = undefined;
+
+   // Set recently reset flag and timestamp
+  user.passwordRecentlyReset = true;
+  user.passwordResetTime = new Date();
+
   await user.save();
 
   res.json({ message: 'Password reset successful' });
@@ -73,6 +81,34 @@ exports.changePassword = async (req, res) => {
     await user.save();
 
     res.status(200).json({ message: 'Password changed successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+exports.checkResetStatus = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    const user = await User.findOne({
+      email: { $regex: new RegExp(`^${email}$`, 'i') }
+    });
+
+    if (!user || !user.verified)
+      return res.status(404).json({ message: 'User not found or unverified' });
+
+    const recentlyReset = user.passwordRecentlyReset && 
+      user.passwordResetTime && 
+      (Date.now() - user.passwordResetTime.getTime()) < 10 * 60 * 1000; // 10 min
+
+    if (!recentlyReset && user.passwordRecentlyReset) {
+      // Auto-clear flag if time expired
+      user.passwordRecentlyReset = false;
+      await user.save();
+    }
+
+    res.json({ passwordRecentlyReset: recentlyReset });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: 'Server error' });

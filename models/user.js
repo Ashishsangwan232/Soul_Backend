@@ -29,6 +29,10 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Like'
   }],
+  
+  passwordRecentlyReset: { type: Boolean, default: false },
+  passwordResetTime: Date,
+
   verified: {
     type: Boolean,
     default: false
