@@ -34,6 +34,7 @@ app.use(cors({
 
 //Routes
 app.use('/api/auth',forgetpassword );
+
 app.use('/api/auth',verifyemail );
 
 app.use('/api/bookmark', bookmarkedRoutes);

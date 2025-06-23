@@ -1,17 +1,24 @@
 require('dotenv').config();
 const nodemailer = require('nodemailer');
-async function sendPasswordResetEmail(email, token) {
 
-  const BREVO_EMAIL_KEY = process.env.BREVO_EMAIL_KEY;
-  const BREVO_EMAIL = process.env.BREVO_EMAIL;
-  const API_ORIGIN = process.env.API_ORIGIN;
-  const BREVO_HOST = process.env.BREVO_HOST;
-  const BREVO_HOST_PORT = process.env.BREVO_HOST_PORT;
-  const resetLink = `${API_ORIGIN}/reset-password/${token}`; // Frontend page to reset password
+async function sendPasswordResetEmail(email, token) {
+  const {
+    BREVO_EMAIL_KEY,
+    BREVO_EMAIL,
+    BREVO_HOST,
+    BREVO_HOST_PORT,
+    API_ORIGIN
+  } = process.env;
+
+  if (!BREVO_EMAIL_KEY || !BREVO_EMAIL || !BREVO_HOST || !BREVO_HOST_PORT || !API_ORIGIN) {
+    throw new Error("Missing email configuration. Check environment variables.");
+  }
+
+  const resetLink = `${API_ORIGIN}/reset-password/${token}`;
 
   const transporter = nodemailer.createTransport({
     host: BREVO_HOST,
-    port: BREVO_HOST_PORT,
+    port: Number(BREVO_HOST_PORT),
     auth: {
       user: BREVO_EMAIL,
       pass: BREVO_EMAIL_KEY,
@@ -19,9 +26,10 @@ async function sendPasswordResetEmail(email, token) {
   });
 
   await transporter.sendMail({
-    from: "SoulReads",
+    from: `SoulReads <${BREVO_EMAIL}>`,
     to: email,
     subject: 'Reset Your Password - SoulReads',
+    text: `A password reset was requested for your account. Use the following link to reset your password: ${resetLink}`,
     html: `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; background-color: #f9f9f9; padding: 20px; border-radius: 8px; color: #333;">
   <h2 style="color: #E53935;">Reset Your Password</h2>
@@ -47,7 +55,7 @@ async function sendPasswordResetEmail(email, token) {
     &copy; ${new Date().getFullYear()} SoulReads. All rights reserved.
   </p>
 </div>
-        `,
+    `,
   });
 }
 
