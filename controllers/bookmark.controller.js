@@ -6,9 +6,16 @@ exports.getMyBookmarks = async (req, res) => {
   const userId = req.user.id;
 
   try {
-    const bookmarks = await Bookmark.find({ 
+    const bookmarks = await Bookmark.find({
       user: userId
-     }).populate('post');
+    }).populate({
+      path: 'post',
+      populate: {
+        path: 'authorId',  // Correct field name from your Post schema
+        select: 'username' // Assuming your User schema has 'username' field
+      }
+    });
+
     res.status(200).json(bookmarks);
   } catch (err) {
     res.status(500).json({ message: err.message });
@@ -34,4 +41,3 @@ exports.toggleBookmark = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-  
