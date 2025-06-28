@@ -1,7 +1,7 @@
 const admin = require('./firebaseAdmin');
 
 const sendNotification = async (deviceToken, title, body) => {
-    if (!tokens.length) return;
+    if (!deviceToken) return;
 
     const message = {
         token: deviceToken,
