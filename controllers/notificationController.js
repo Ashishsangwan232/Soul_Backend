@@ -3,10 +3,11 @@ const User = require('../models/user');
 exports.saveToken = async (req, res) => {
     try {
         const userId = req.user.id; // Assuming Auth Middleware adds `req.user`
+        // const { token, userId } = req.body;
         const { token } = req.body;
 
-        if (!token) {
-            return res.status(400).json({ message: 'FCM token is required' });
+        if (!token || !userId) {
+            return res.status(400).json({ message: 'Missing token or userId' });
         }
 
         const user = await User.findById(userId);
