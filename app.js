@@ -45,7 +45,7 @@ app.use('/api/posts',searchRoute)
 app.use('/api/likes', likeRoutes);
 app.use('/api/posthard', hardDelete);
 
-app.use('/api', countRoutes);
+app.use('/api', countRoutes );
 
 app.use('/api/comments', commentRoutes);
 
