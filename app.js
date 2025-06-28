@@ -34,6 +34,10 @@ app.use(cors({
 
 
 //Routes
+app.get('/api/ping', (req, res) => {
+  res.send('Pong!');
+});
+
 app.use('/api', notificationRoutes);
 
 app.use('/api/auth',forgetpassword );
