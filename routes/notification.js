@@ -9,10 +9,18 @@ router.post('/send-notification', async (req, res) => {
         return res.status(400).json({ message: 'Missing fields' });
     }
 
+    // try {
+    //     await sendNotification(token, title, body);
+    //     res.json({ message: 'Notification sent' });
+    // } catch (err) {
+    //     res.status(500).json({ message: 'Failed to send notification' });
+    // }
     try {
+        console.log('Sending Notification:', { token, title, body });
         await sendNotification(token, title, body);
         res.json({ message: 'Notification sent' });
     } catch (err) {
+        console.error('❌ Notification Error:', err);
         res.status(500).json({ message: 'Failed to send notification' });
     }
 });
