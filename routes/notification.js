@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const sendNotification = require('../firebase/sendNotification'); // Adjust path
-const {saveToken} = require('../controllers/notificationController');
-const verifyUser =require('../middlewares/verification');
+const saveToken = require('../controllers/notificationController');
+const verifyUser = require('../middlewares/verification');
 
 router.post('/save-token', verifyUser.verifyToken, saveToken);
 
