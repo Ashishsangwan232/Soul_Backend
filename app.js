@@ -34,8 +34,9 @@ app.use(cors({
 
 
 //Routes
+// Health Check Route for UptimeRobot or Manual Checks
 app.get('/api/ping', (req, res) => {
-  res.send('Pong!');
+    res.status(200).send('Pong! Server is active.');
 });
 
 app.use('/api', notificationRoutes);
