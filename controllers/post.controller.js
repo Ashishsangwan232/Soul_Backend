@@ -47,7 +47,7 @@ exports.post = async (req, res) => {
             `New Post by ${foundUser.username || foundUser.name}`,
             title
           );
-          
+
           res.status(201).json({ ...savedPost._doc, id: savedPost._id });
         } catch (err) {
           console.warn(`Failed to notify ${user.username}:`, err.message);
@@ -56,7 +56,8 @@ exports.post = async (req, res) => {
     }
     // res.status(201).json(savedPost);
     res.status(201).json({ ...savedPost._doc, id: savedPost._id });
-
+    
+    notifyUsers(savedPost).catch(err => console.error('Notification error:', err));
   } catch (error) {
     console.error("Error creating post:", error);
     res.status(500).json({ message: 'An internal server error occurred while creating the post.' });
