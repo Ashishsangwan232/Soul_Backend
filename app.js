@@ -14,7 +14,8 @@ const bookmarkedRoutes = require('./routes/bookmark.routes.js');
 const searchRoute=require('./routes/search.route.js');
 const hardDelete =require("./routes/harddete.js");
 const verifyemail =require("./routes/verifyemail.route.js");
-const forgetpassword =require("./routes/forgetpass.routes.js")
+const forgetpassword =require("./routes/forgetpass.routes.js");
+const notificationRoutes =require("./routes/notification.js");
 const API_ORIGIN =process.env.API_ORIGIN;
 const cookieParser = require('cookie-parser');
 
@@ -33,6 +34,8 @@ app.use(cors({
 
 
 //Routes
+app.use('/api', notificationRoutes);
+
 app.use('/api/auth',forgetpassword );
 
 app.use('/api/auth',verifyemail );
