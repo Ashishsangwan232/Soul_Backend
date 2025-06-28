@@ -1,6 +1,6 @@
 const admin = require('./firebaseAdmin');
 
-const sendNotification = async (deviceToken, title, body) => {
+const sendNotification = async (deviceToken, title, body, postId) => {
     if (!deviceToken) return;
 
     const message = {
