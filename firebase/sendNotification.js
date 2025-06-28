@@ -1,31 +1,8 @@
-// const admin = require('./firebaseAdmin'); // Adjust path
-
-// const sendNotification = async (deviceToken, title, body) => {
-//     const message = {
-//         token: deviceToken,
-//         notification: {
-//             title: title,
-//             body: body,
-//         },
-//         webpush: {
-//             notification: {
-//                 icon: 'https://soulreads-eta.vercel.app/images/logo%20SR.svg',
-//             },
-//         },
-//     };
-
-//     try {
-//         const response = await admin.messaging().send(message);
-//         console.log('✅ Notification sent:', response);
-//     } catch (error) {
-//         console.error('❌ Error sending notification:', error);
-//     }
-// };
-
-// module.exports = sendNotification;
 const admin = require('./firebaseAdmin');
 
 const sendNotification = async (deviceToken, title, body) => {
+    if (!tokens.length) return;
+
     const message = {
         token: deviceToken,
         notification: {
@@ -35,6 +12,7 @@ const sendNotification = async (deviceToken, title, body) => {
         webpush: {
             notification: {
                 icon: 'https://soulreads-eta.vercel.app/images/logo%20SR.svg',
+                click_action: `https://soulreads-eta.vercel.app/posts/${postId}`,
             },
             headers: {
                 Urgency: 'high',

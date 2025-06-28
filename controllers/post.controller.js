@@ -39,7 +39,7 @@ exports.post = async (req, res) => {
         _id: { $ne: foundUser._id },
         fcmToken: { $ne: null }
       });
-      
+
       for (const user of otherUsers) {
         try {
           await sendNotification(
@@ -47,6 +47,8 @@ exports.post = async (req, res) => {
             `New Post by ${foundUser.username || foundUser.name}`,
             title
           );
+          
+          res.status(201).json({ ...savedPost._doc, id: savedPost._id });
         } catch (err) {
           console.warn(`Failed to notify ${user.username}:`, err.message);
         }
