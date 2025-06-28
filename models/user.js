@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Like'
   }],
-  
+
   passwordRecentlyReset: { type: Boolean, default: false },
   passwordResetTime: Date,
 
@@ -46,7 +46,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: choices,
     default: 'oggy',
-  }
+  },
+  fcmToken: {
+    type: String,
+    default: null,
+  },
+
 }, {
   timestamps: true,
   toJSON: { virtuals: true },

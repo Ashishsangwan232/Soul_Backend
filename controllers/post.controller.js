@@ -1,6 +1,6 @@
 const Post = require('../models/posts');
 const User = require('../models/user');
-
+const sendNotification = require('../firebase/sendNotification');
 // It's highly recommended to add input validation (e.g., using Joi or express-validator)
 // as middleware before these controller functions are called.
 
@@ -15,6 +15,7 @@ exports.post = async (req, res) => {
     }
 
     const foundUser = await User.findById(req.userId);
+
     if (!foundUser) {
       return res.status(404).json({ message: 'User not found.' });
     }
@@ -25,7 +26,7 @@ exports.post = async (req, res) => {
       category,
       status: status || 'published',
       authorId: foundUser._id,
-      authorName: foundUser.username || foundUser.name // Denormalized for read performance
+      // authorName: foundUser.username || foundUser.name // Denormalized for read performance
     });
 
     const savedPost = await newPost.save();
@@ -33,6 +34,24 @@ exports.post = async (req, res) => {
     // Atomically add the post ID to the user's posts array
     await User.findByIdAndUpdate(foundUser._id, { $push: { posts: savedPost._id } });
 
+    if ((status || 'published') === 'published') {
+      const otherUsers = await User.find({
+        _id: { $ne: foundUser._id },
+        fcmToken: { $ne: null }
+      });
+      
+      for (const user of otherUsers) {
+        try {
+          await sendNotification(
+            user.fcmToken,
+            `New Post by ${foundUser.username || foundUser.name}`,
+            title
+          );
+        } catch (err) {
+          console.warn(`Failed to notify ${user.username}:`, err.message);
+        }
+      }
+    }
     // res.status(201).json(savedPost);
     res.status(201).json({ ...savedPost._doc, id: savedPost._id });
 
@@ -214,7 +233,7 @@ exports.softDeletePost = async (req, res) => {
 
     const post = await Post.findById({
       _id: postId,
-      authorId:req.userId
+      authorId: req.userId
     });
 
     if (!req.userId) {
