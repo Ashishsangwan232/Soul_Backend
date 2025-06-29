@@ -5,5 +5,6 @@ const hardDelete =require('../controllers/Harddeletecontroller');
 
 
 router.patch('/:id/parmanentDeleted', auth.verifyToken,hardDelete.hardDeletePost);
+router.patch('/comments/:commentId', auth.verifyToken,hardDelete.deleteComment);
 
 module.exports = router;

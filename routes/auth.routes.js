@@ -30,14 +30,16 @@ router.get("/profile", verify.verifyToken, async (req, res) => {
   try {
     const user = await User.findById(req.userId).select("-password");
     if (!user) return res.status(404).json({ message: "User not found." });
-    res.json(user);
+    // res.json(user);
+    const userObj = user.toObject({ virtuals: true }); // ensure virtuals included
+    res.json(userObj);
+    
   } catch (err) {
     res.status(500).json({ message: "Error fetching user profile." });
   }
 });
 
-
-router.put('/update-profile',verify.verifyToken,updatecontroller.updateProfile)
-router.put('/avatar',verify.verifyToken, updatecontroller.updateAvatar);
+router.put('/update-profile', verify.verifyToken, updatecontroller.updateProfile)
+router.put('/avatar', verify.verifyToken, updatecontroller.updateAvatar);
 
 module.exports = router;

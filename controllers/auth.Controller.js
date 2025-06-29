@@ -64,45 +64,40 @@ exports.signin = async (req, res) => {
 
         const user = await User.findOne({
             email: { $regex: new RegExp(`^${email}$`, 'i') }
-
         });
 
         if (!user) {
             return res.status(404).json({ message: "User Not found." });
         }
 
-        // if email present in DB then handle password for login
-
         const passwordIsValid = bcrypt.compareSync(password, user.password);
-
         if (!passwordIsValid) {
             return res.status(401).json({ message: "Invalid Password!" });
         }
+
         if (!user.verified) {
             return res.status(403).json({ message: "Please verify your email before logging in." });
         }
 
         const token = jwt.sign({ id: user.id }, jwtSecret, {
-            // expiresIn: "1d",
             expiresIn: rememberMe ? "7d" : "1d",
         });
 
         res.cookie("token", token, {
             httpOnly: true,
-            secure: true, // 🔁 Set to true if using HTTPS
-            sameSite: "None", // ⬅️ THIS IS NEEDED (or "None" if cross-site with HTTPS)
-            // maxAge: 24 * 60 * 60 * 1000 // 1 day
-            maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000  // 7d vs 1d
+            secure: true,
+            sameSite: "None",
+            maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000
         });
+
+        const userObj = user.toObject({ virtuals: true });
+        delete userObj.password;
 
         res.status(200).json({
             message: "Login successful",
-            user: {
-                id: user._id,
-                username: user.username,
-                email: user.email,
-            }
+            user: userObj
         });
+
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

@@ -1,10 +1,10 @@
 const Post = require('../models/posts');
 const User = require('../models/user');
 const Likes = require('../models/Likes');
-const Commet = require('../models/Comment');
+const Comment = require('../models/Comment');
 const Bookmark = require('../models/bookmark');
-
 // HARD DELETE POST (permanent, only by author)
+
 exports.hardDeletePost = async (req, res) => {
     try {
         const postId = req.params.id;
@@ -24,7 +24,7 @@ exports.hardDeletePost = async (req, res) => {
         await Likes.deleteMany({ targetId: postId, targetType: 'Post' });
         
         // 4. Delete associated comments
-        await Commet.deleteMany({ postId: postId });
+        await Comment.deleteMany({ postId: postId });
         
         // 5. Remove post from all user's bookmarks
         // await User.updateMany({}, { $pull: { bookmarks: postId } });
@@ -45,4 +45,30 @@ exports.hardDeletePost = async (req, res) => {
         }
         res.status(500).json({ message: 'Internal server error while permanently deleting the post.' });
     }
+};
+
+// DELETE /comments/:commentId
+
+exports.deleteComment = async (req, res) => {
+  try {
+    const commentId = req.params.commentId;
+    const userId = req.userId; 
+
+    const comment = await Comment.findById(commentId).populate('postId', 'authorId');
+    if (!comment) return res.status(404).json({ message: 'Comment not found.' });
+
+    const isCommentOwner = String(comment.authorId) === String(userId);
+    const isPostOwner = String(comment.postId.authorId) === String(userId);
+
+    if (!isCommentOwner && !isPostOwner) {
+      return res.status(403).json({ message: 'Not authorized to delete this comment.' });
+    }
+
+    await Comment.findByIdAndDelete(commentId);
+
+    res.json({ message: 'Comment deleted successfully.' });
+  } catch (err) {
+    console.error('Delete Comment Error:', err);
+    res.status(500).json({ message: 'Server error while deleting comment.' });
+  }
 };

@@ -1,5 +1,6 @@
 const Post = require('../models/posts');
 const User = require('../models/user');
+const Comment = require('../models/Comment'); // Assuming correct path
 const sendNotification = require('../firebase/sendNotification');
 // It's highly recommended to add input validation (e.g., using Joi or express-validator)
 // as middleware before these controller functions are called.
@@ -64,31 +65,34 @@ exports.post = async (req, res) => {
   }
 };
 
-// GET ALL PUBLISHED POSTS (not deleted or archived)
-// Consider implementing pagination for large datasets
 exports.getAllPosts = async (req, res) => {
   try {
-    // Example pagination query params: req.query.page, req.query.limit
-    // const page = parseInt(req.query.page) || 1;
-    // const limit = parseInt(req.query.limit) || 10;
-    // const skip = (page - 1) * limit;
-
     const posts = await Post.find({
       status: 'published',
       isDeleted: false,
       archive: false
     })
       .sort({ createdAt: -1 })
-      .populate('authorId', 'username')
-    // .skip(skip) // For pagination
-    // .limit(limit); // For pagination
+      .populate('authorId', 'username');
 
-    res.status(200).json(posts);
+    // Add commentsCount for each post
+    const enrichedPosts = await Promise.all(
+      posts.map(async (post) => {
+        const count = await Comment.countDocuments({ postId: post._id });
+        return {
+          ...post.toObject(), // convert Mongoose doc to plain object
+          commentsCount: count
+        };
+      })
+    );
+
+    res.status(200).json(enrichedPosts);
   } catch (err) {
     console.error("Error fetching all posts:", err);
     res.status(500).json({ message: "An internal server error occurred while fetching posts." });
   }
 };
+
 
 // GET LOGGED-IN USER'S POSTS
 // Consider implementing pagination
@@ -130,7 +134,7 @@ exports.getSinglePost = async (req, res) => {
       isDeleted: false,
       archive: false,
       // status: 'published'
-    }).populate('authorId', 'username');
+    }).populate('authorId', 'username profilePic');
 
 
     if (!post) {
@@ -230,10 +234,10 @@ exports.updatePost = async (req, res) => {
 };
 
 // SOFT DELETE POST (mark as deleted, only by author)
+
 exports.softDeletePost = async (req, res) => {
   try {
     const postId = req.params.id;
-
     const post = await Post.findById({
       _id: postId,
       authorId: req.userId
