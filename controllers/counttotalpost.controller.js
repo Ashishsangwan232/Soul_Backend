@@ -3,7 +3,7 @@ const Post = require('../models/posts'); // Adjust path as needed
 // Controller to count total posts by a user
 const countPostsByUser = async (req, res) => {
   try {
-    console.log("User ID:", req.userId);
+    // console.log("User ID:", req.userId);
     const userId = req.userId; // Assuming you use auth middleware that sets req.user
     const count = await Post.countDocuments({ 
       authorId: userId,
