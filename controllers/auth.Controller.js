@@ -9,7 +9,7 @@ const jwtSecret = process.env.JWT_SECRET;
 exports.signup = async (req, res) => {
     try {
         const { username, email, password } = req.body;
-        console.log("Signup hit:", req.body);
+        // console.log("Signup hit:", req.body);
 
         let existingUser = await User.findOne({
             email: { $regex: new RegExp(`^${email}$`, 'i') }
@@ -60,7 +60,7 @@ exports.signup = async (req, res) => {
 exports.signin = async (req, res) => {
     try {
         const { email, password, rememberMe } = req.body;
-        console.log("Signin hit:", req.body);
+        // console.log("Signin hit:", req.body);
 
         const user = await User.findOne({
             email: { $regex: new RegExp(`^${email}$`, 'i') }

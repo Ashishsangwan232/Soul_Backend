@@ -9,7 +9,8 @@ if (!mongoURI) {
 const connectDB = async () => {
     try {
         const conn = await mongoose.connect(mongoURI);
-        console.log(`Successfully connected MongoDB: ${conn.connection.host}`);// this and .then() are doing same work
+        // console.log(`Successfully connected MongoDB: ${conn.connection.host}`);// this and .then() are doing same work
+        console.log(`Successfully connected to Server`);// this and .then() are doing same work
         // .then(() => console.log("Successfully connected to MongoDB."))
 
     } 

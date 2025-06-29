@@ -133,22 +133,27 @@ exports.getSinglePost = async (req, res) => {
       _id: req.params.id,
       isDeleted: false,
       archive: false,
-      // status: 'published'
-    }).populate('authorId', 'username profilePic');
-
+    }).populate({
+      path: 'authorId',
+      select: 'username profilePicKey', // profilePicKey needed for virtual to compute
+    });
 
     if (!post) {
       return res.status(404).json({ message: 'Post not found or not available.' });
     }
-    res.status(200).json(post);
+
+    const postObj = post.toObject({ virtuals: true }); // Ensure virtuals like profilePic show up
+
+    res.status(200).json(postObj);
   } catch (err) {
     console.error("Error fetching single post:", err);
-    if (err.name === 'CastError') { // Handle invalid ObjectId format
+    if (err.name === 'CastError') {
       return res.status(400).json({ message: 'Invalid post ID format.' });
     }
     res.status(500).json({ message: "An internal server error occurred while fetching the post." });
   }
 };
+
 // TOGGLE ARCHIVE STATUS OF A POST
 exports.toggleArchive = async (req, res) => {
   try {
@@ -188,8 +193,8 @@ exports.toggleArchive = async (req, res) => {
 };
 exports.updatePost = async (req, res) => {
   try {
-    console.log("REQ.BODY:", req.body);
-    console.log("REQ.PARAMS:", req.params);
+    // console.log("REQ.BODY:", req.body);
+    // console.log("REQ.PARAMS:", req.params);
     const { title, content, category, status } = req.body;
 
     // Validate at least one field is provided

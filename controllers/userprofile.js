@@ -6,11 +6,11 @@ exports.userprofile = async (req, res) => {
         const userId = req.params.userId;
 
         // Get basic details
-        console.log(userId);
+        // console.log(userId);
         const user = await User.findById(userId).select('username email profilePicKey');
 
         if (!user) return res.status(404).json({ message: 'User not found' });
-        console.log(userId);
+        // console.log(userId);
         // Get additional stats
         const posts = await Post.find({ authorId: userId });
         const postCount = posts.length;

@@ -37,17 +37,24 @@ exports.addComment = async (req, res) => {
     res.status(500).json({ message: 'Internal server error while adding comment.' });
   }
 };
-
-// GET comments for a post
 exports.getCommentsByPost = async (req, res) => {
   try {
     const { postId } = req.params;
 
     const comments = await Comment.find({ postId })
-      .populate('authorId', 'username')
+      .populate({
+        path: 'authorId',
+        select: 'username profilePicKey',
+      })
       .sort({ createdAt: -1 });
 
-    res.status(200).json(comments);
+    // Map each comment to plain object with virtuals
+    const commentsObj = comments.map(comment =>
+      comment.toObject({ virtuals: true })
+    );
+
+    res.status(200).json(commentsObj);
+
   } catch (err) {
     console.error("Error fetching comments:", err);
     res.status(500).json({ message: 'Error fetching comments for this post.' });

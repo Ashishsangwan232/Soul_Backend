@@ -54,7 +54,7 @@ exports.updateProfile = async (req, res) => {
 exports.updateAvatar = async (req, res) => {
     const userId = req.user.id;
     const { profilePicKey } = req.body;
-    console.log("pic updated Hit:", profilePicKey);
+    // console.log("pic updated Hit:", profilePicKey);
     // 1. Validate presence
     if (!profilePicKey) {
         return res.status(400).json({ error: 'profilePicKey is required' });
