@@ -36,9 +36,19 @@ app.use(cors({
 
 //Routes
 // Health Check Route for UptimeRobot or Manual Checks
+const bete = process.env.BETE;
+
 app.get('/api/ping', (req, res) => {
   res.status(200).send('Pong! Server is active.');
 });
+
+app.get('/api/soulReadsBete', (req, res) => {
+  if (req.headers['x-cron-key'] !== `${bete}`) {
+    return res.status(403).send('Forbidden');
+  }
+  res.send('✅ Website uthi hui hai');
+});
+
 
 app.use('/api/user', userprofile);
 
@@ -61,6 +71,6 @@ app.use('/api/posts', postRoutes);
 
 app.use('/api/auth', authRoutes);
 
-const PORT = process.env.PORT || 8080;
+// const PORT = process.env.PORT || 8080;
 // app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
 app.listen(PORT, () => console.log(`Server is running`));
