@@ -36,19 +36,29 @@ app.use(cors({
 
 //Routes
 // Health Check Route for UptimeRobot or Manual Checks
-const bete = process.env.BETE;
 
 app.get('/api/ping', (req, res) => {
   res.status(200).send('Pong! Server is active.');
 });
 
+// const bete = process.env.BETE;
+// app.get('/api/soulReadsBete', (req, res) => {
+//   if (req.headers['x-cron-key'] !== `${bete}`) {
+//     return res.status(403).send('Forbidden');
+//   }
+//   res.send('✅ Website uthi hui hai');
+// });
+
+const bete = process.env.BETE;
 app.get('/api/soulReadsBete', (req, res) => {
+  console.log('Env BETE:', bete);
+  console.log('Header x-cron-key:', req.headers['x-cron-key']);
+
   if (req.headers['x-cron-key'] !== `${bete}`) {
     return res.status(403).send('Forbidden');
   }
   res.send('✅ Website uthi hui hai');
 });
-
 
 app.use('/api/user', userprofile);
 
